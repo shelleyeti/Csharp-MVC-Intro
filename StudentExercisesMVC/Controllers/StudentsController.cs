@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using StudentExercises.Models.ViewModels;
 using StudentExercisesMVC.Models;
 
 namespace StudentExercisesMVC.Controllers
@@ -26,6 +24,7 @@ namespace StudentExercisesMVC.Controllers
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
+
         // GET: Students
         public ActionResult Index()
         {
@@ -46,7 +45,7 @@ namespace StudentExercisesMVC.Controllers
                     {
                         students.Add(new Student()
                         {
-                            StudentId = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
@@ -81,7 +80,7 @@ namespace StudentExercisesMVC.Controllers
                     {
                         student = new Student()
                         {
-                            StudentId = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
@@ -96,17 +95,35 @@ namespace StudentExercisesMVC.Controllers
         // GET: Students/Create
         public ActionResult Create()
         {
-            return View();
+            var viewModel = new StudentCreateViewModel(_config.GetConnectionString("DefaultConnection"));
+            return View(viewModel);
         }
 
         // POST: Students/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Student student)
         {
             try
             {
-                // TODO: Add insert logic here
+                using(SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"INSERT INTO Student
+                                            (FirstName, LastName, SlackHandle, CohortId)
+                                            VALUES 
+                                            (@firstName, @lastName, @slackHandle, @cohortId)";
+
+                        cmd.Parameters.AddWithValue("@firstName", student.FirstName);
+                        cmd.Parameters.AddWithValue("@lastName", student.LastName);
+                        cmd.Parameters.AddWithValue("@slackHandle", student.SlackHandle); 
+                        cmd.Parameters.AddWithValue("@cohortId", student.CohortId);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
 
                 return RedirectToAction(nameof(Index));
             }

@@ -1,18 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using StudentExercises.Models.ViewModels;
 using StudentExercisesMVC.Models;
 
 namespace StudentExercisesMVC.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IConfiguration _config;
+
+        public HomeController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var viewModel = new StudentInstructorViewModel(_config.GetConnectionString("DefaultConnection"));
+            return View(viewModel);
         }
 
         public IActionResult About()
