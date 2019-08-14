@@ -139,102 +139,70 @@ namespace StudentExercisesMVC.Controllers
             }
         }
 
-        //// GET: Instructors/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    var viewModel = new InstructorEditViewModel();
-        //    var cohorts = GetAllCohorts();
-        //    var selectItems = cohorts
-        //        .Select(cohort => new SelectListItem
-        //        {
-        //            Text = cohort.Name,
-        //            Value = cohort.CohortId.ToString()
-        //        })
-        //        .ToList();
+        // GET: Cohorts/Edit/5
+        public ActionResult Edit(int id)
+        {
+            var viewModel = new CohortEditViewModel();
+            var cohorts = GetAllCohorts();
 
-        //    selectItems.Insert(0, new SelectListItem
-        //    {
-        //        Text = "Choose cohort...",
-        //        Value = "0"
-        //    });
-        //    viewModel.Cohorts = selectItems;
+            Cohort cohort = null;
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, [Name]
+                                        FROM Cohort
+                                        WHERE Id = @id";
 
-        //    Instructor instructor = null;
-        //    using (SqlConnection conn = Connection)
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = @"SELECT Id, FirstName, LastName, SlackHandle, CohortId
-        //                                FROM Instructor
-        //                                WHERE Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = cmd.ExecuteReader();
 
-        //            cmd.Parameters.Add(new SqlParameter("@id", id));
-        //            SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        cohort = new Cohort()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                        };
+                    }
+                }
+            }
+            viewModel.Cohort = cohort;
+            return View(viewModel);
+        }
 
-        //            if (reader.Read())
-        //            {
-        //                instructor = new Instructor()
-        //                {
-        //                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-        //                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-        //                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
-        //                    SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
-        //                    CohortId = reader.GetInt32(reader.GetOrdinal("CohortId"))
-        //                };
-        //            }
-        //        }
-        //    }
+        // POST: Cohorts/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Cohort cohort)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Cohort
+                                            SET 
+                                            [Name] = @name
+                                            WHERE Id = @id";
 
-        //    foreach (var cohortItem in viewModel.Cohorts)
-        //    {
-        //        if (Convert.ToInt32(cohortItem.Value) == instructor.CohortId)
-        //        {
-        //            cohortItem.Selected = true;
-        //        }
-        //    }
+                        cmd.Parameters.AddWithValue("@name", cohort.Name);
+                        cmd.Parameters.AddWithValue("@id", id);
 
-        //    viewModel.Instructor = instructor;
-        //    return View(viewModel);
-        //}
+                        cmd.ExecuteNonQuery();
+                    }
+                }
 
-        //// POST: Instructors/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, Instructor instructor)
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = Connection)
-        //        {
-        //            conn.Open();
-        //            using (SqlCommand cmd = conn.CreateCommand())
-        //            {
-        //                cmd.CommandText = @"UPDATE Instructor
-        //                                    SET 
-        //                                    FirstName = @firstName, 
-        //                                    LastName = @lastName, 
-        //                                    SlackHandle = @slackHandle, 
-        //                                    CohortId = @cohortId
-        //                                    WHERE Id = @id";
-
-        //                cmd.Parameters.AddWithValue("@firstName", instructor.FirstName);
-        //                cmd.Parameters.AddWithValue("@lastName", instructor.LastName);
-        //                cmd.Parameters.AddWithValue("@slackHandle", instructor.SlackHandle);
-        //                cmd.Parameters.AddWithValue("@cohortId", instructor.CohortId);
-        //                cmd.Parameters.AddWithValue("@id", id);
-
-        //                cmd.ExecuteNonQuery();
-        //            }
-        //        }
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (Exception err)
-        //    {
-        //        return View();
-        //    }
-        //}
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception err)
+            {
+                return View();
+            }
+        }
 
         //// GET: Instructors/Delete/5
         //public ActionResult Delete(int id)
