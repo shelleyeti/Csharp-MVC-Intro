@@ -78,7 +78,7 @@ namespace StudentExercisesMVC.Controllers
                         cohort = new Cohort()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("[Name]")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
                         };
                     }
                 }
