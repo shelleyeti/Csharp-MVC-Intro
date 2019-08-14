@@ -154,7 +154,7 @@ namespace StudentExercisesMVC.Controllers
         {
             var viewModel = new StudentEditViewModel();
             var cohorts = GetAllCohorts();
-            var selectItems = cohorts
+            var selectItems = cohorts 
                 .Select(cohort => new SelectListItem
                 {
                     Text = cohort.Name,
@@ -211,7 +211,7 @@ namespace StudentExercisesMVC.Controllers
         // POST: Students/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Student student)
         {
             try
             {
@@ -228,10 +228,10 @@ namespace StudentExercisesMVC.Controllers
                                             CohortId = @cohortId
                                             WHERE Id = @id";
 
-                        cmd.Parameters.AddWithValue("@firstName", collection["Student.FirstName"][0]);
-                        cmd.Parameters.AddWithValue("@lastName", collection["Student.LastName"][0]);
-                        cmd.Parameters.AddWithValue("@slackHandle", collection["Student.SlackHandle"][0]);
-                        cmd.Parameters.AddWithValue("@cohortId", collection["Student.CohortId"][0]);
+                        cmd.Parameters.AddWithValue("@firstName", student.FirstName);
+                        cmd.Parameters.AddWithValue("@lastName", student.LastName);
+                        cmd.Parameters.AddWithValue("@slackHandle", student.SlackHandle);
+                        cmd.Parameters.AddWithValue("@cohortId", student.CohortId);
                         cmd.Parameters.AddWithValue("@id", id);
 
                         cmd.ExecuteNonQuery();
