@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace StudentExercises.Models.ViewModels
 {
-    public class InstructorCreateViewModel
+    public class StudentEditViewModel
     {
         public List<SelectListItem> Cohorts { get; set; }
-        public Instructor Instructor { get; set; }
+        public Student Student { get; set; }
     }
 }

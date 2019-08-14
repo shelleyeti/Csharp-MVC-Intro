@@ -1,0 +1,52 @@
+﻿@model StudentExercises.Models.ViewModels.StudentEditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>Student</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Student.FirstName" class="control-label"></label>
+                @Html.TextBoxFor(model => model.Student.FirstName, new { @class = "form-control" })
+                @*<input asp-for="FirstName" value="@Html.DisplayNameFor(model => model.FirstName)" class="form-control" />*@
+                <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Student.LastName" class="control-label"></label>
+                @Html.TextBoxFor(model => model.Student.LastName, new { @class = "form-control" })
+                @*<input asp-for="LastName" value="@Html.DisplayNameFor(model => model.LastName)" class="form-control" />*@
+                <span asp-validation-for="Student.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Student.SlackHandle" class="control-label"></label>
+                @Html.TextBoxFor(model => model.Student.SlackHandle, new { @class = "form-control" })
+                @*<input asp-for="SlackHandle" value="@Html.DisplayNameFor(model => model.SlackHandle)" class="form-control" />*@
+                <span asp-validation-for="Student.SlackHandle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Student.CohortId" class="control-label"></label>
+                @Html.DropDownListFor(model => model.Student.CohortId, Model.Cohorts);
+                @*<input asp-for="CohortId" value="@Html.DisplayNameFor(model => model.CohortId)" class="form-control" />*@
+                <span asp-validation-for="Student.CohortId" class="text-danger"></span>
+            </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

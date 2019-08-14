@@ -4,7 +4,7 @@ namespace StudentExercisesMVC.Models
 {
     public class Instructor
     {
-        [Display(Name = "Cohort Id")]
+        [Display(Name = "Instructor Id")]
         public int? Id { get; set; }
 
         [Required]
