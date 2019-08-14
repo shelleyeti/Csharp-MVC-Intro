@@ -40,8 +40,7 @@ namespace StudentExercisesMVC.Controllers
                 {
                     cmd.CommandText = @"
                         SELECT Id, FirstName, LastName, SlackHandle, CohortId
-                        FROM Student
-                    ";
+                        FROM Student";
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -102,7 +101,7 @@ namespace StudentExercisesMVC.Controllers
                 .Select(cohort => new SelectListItem
                 {
                     Text = cohort.Name,
-                    Value = cohort.CohortId.ToString()
+                    Value = cohort.Id.ToString()
                 })
                 .ToList();
 
@@ -158,7 +157,7 @@ namespace StudentExercisesMVC.Controllers
                 .Select(cohort => new SelectListItem
                 {
                     Text = cohort.Name,
-                    Value = cohort.CohortId.ToString()
+                    Value = cohort.Id.ToString()
                 })
                 .ToList();
 
@@ -284,7 +283,7 @@ namespace StudentExercisesMVC.Controllers
                     {
                         cohorts.Add(new Cohort
                         {
-                            CohortId = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                         });
                     }

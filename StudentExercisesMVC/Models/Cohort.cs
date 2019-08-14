@@ -1,8 +1,14 @@
-﻿namespace StudentExercisesMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace StudentExercisesMVC.Models
 {
     public class Cohort
     {
-        public int CohortId { get; set; }
+        [Display(Name = "Cohort Id")]
+        public int Id { get; set; }
+
+        [Required]
+        [Display(Name = "Cohort Name")]
         public string Name { get; set; }
     }
 }
