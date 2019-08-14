@@ -1,26 +1,22 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace StudentExercisesMVC.Models
 {
-    public class Student
+    public class Instructor
     {
-        [Display(Name = "Student Id")]
+        [Display(Name = "Instructor Id")]
         public int? Id { get; set; }
 
         [Required]
         [Display(Name = "First Name")]
-        [MaxLength(20)]
         public string FirstName { get; set; }
 
         [Required]
         [Display(Name = "Last Name")]
-        [MaxLength(20)]
         public string LastName { get; set; }
 
         [Required]
         [Display(Name = "Slack Handle")]
-        [MinLength(2)]
         public string SlackHandle { get; set; }
 
         [Required]
@@ -36,7 +32,5 @@ namespace StudentExercisesMVC.Models
                 return $"{FirstName} {LastName}";
             }
         }
-
-        public List<Cohort> Cohorts { get; set; } = new List<Cohort>();
     }
 }

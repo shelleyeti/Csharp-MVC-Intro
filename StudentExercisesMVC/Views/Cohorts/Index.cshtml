@@ -1,4 +1,4 @@
-﻿@model IEnumerable<StudentExercisesMVC.Models.Student>
+﻿@model IEnumerable<StudentExercisesMVC.Models.Cohort>
 
 @{
     ViewData["Title"] = "Index";
@@ -16,13 +16,7 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SlackHandle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th></th>
         </tr>
@@ -34,13 +28,7 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SlackHandle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
