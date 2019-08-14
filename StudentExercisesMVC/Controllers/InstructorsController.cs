@@ -97,21 +97,7 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Create()
         {
             var viewModel = new InstructorCreateViewModel();
-            var cohorts = GetAllCohorts();
-            var selectItems = cohorts
-                .Select(cohort => new SelectListItem
-                {
-                    Text = cohort.Name,
-                    Value = cohort.Id.ToString()
-                })
-                .ToList();
-
-            selectItems.Insert(0, new SelectListItem
-            {
-                Text = "Choose cohort...",
-                Value = "0"
-            });
-            viewModel.Cohorts = selectItems;
+            viewModel.Cohorts = cohortList();
             return View(viewModel);
         }
 
@@ -153,21 +139,7 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Edit(int id)
         {
             var viewModel = new InstructorEditViewModel();
-            var cohorts = GetAllCohorts();
-            var selectItems = cohorts
-                .Select(cohort => new SelectListItem
-                {
-                    Text = cohort.Name,
-                    Value = cohort.Id.ToString()
-                })
-                .ToList();
-
-            selectItems.Insert(0, new SelectListItem
-            {
-                Text = "Choose cohort...",
-                Value = "0"
-            });
-            viewModel.Cohorts = selectItems;
+            viewModel.Cohorts = cohortList();
 
             Instructor instructor = null;
             using (SqlConnection conn = Connection)
@@ -336,8 +308,24 @@ namespace StudentExercisesMVC.Controllers
                 }
             }
         }
+        
+        private List<SelectListItem> cohortList()
+        {
+            var cohorts = GetAllCohorts();
+            var selectItems = cohorts
+                .Select(cohort => new SelectListItem
+                {
+                    Text = cohort.Name,
+                    Value = cohort.Id.ToString()
+                })
+                .ToList();
 
-        //get one instructor
-        //get all instructors
+            selectItems.Insert(0, new SelectListItem
+            {
+                Text = "Choose cohort...",
+                Value = "0"
+            });
+            return selectItems;
+        }
     }
 }
