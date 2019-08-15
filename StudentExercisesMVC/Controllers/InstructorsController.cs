@@ -97,21 +97,7 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Create()
         {
             var viewModel = new InstructorCreateViewModel();
-            var cohorts = GetAllCohorts();
-            var selectItems = cohorts
-                .Select(cohort => new SelectListItem
-                {
-                    Text = cohort.Name,
-                    Value = cohort.Id.ToString()
-                })
-                .ToList();
-
-            selectItems.Insert(0, new SelectListItem
-            {
-                Text = "Choose cohort...",
-                Value = "0"
-            });
-            viewModel.Cohorts = selectItems;
+            viewModel.Cohorts = cohortList();
             return View(viewModel);
         }
 
@@ -153,21 +139,7 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Edit(int id)
         {
             var viewModel = new InstructorEditViewModel();
-            var cohorts = GetAllCohorts();
-            var selectItems = cohorts
-                .Select(cohort => new SelectListItem
-                {
-                    Text = cohort.Name,
-                    Value = cohort.Id.ToString()
-                })
-                .ToList();
-
-            selectItems.Insert(0, new SelectListItem
-            {
-                Text = "Choose cohort...",
-                Value = "0"
-            });
-            viewModel.Cohorts = selectItems;
+            viewModel.Cohorts = cohortList();
 
             Instructor instructor = null;
             using (SqlConnection conn = Connection)
@@ -225,13 +197,15 @@ namespace StudentExercisesMVC.Controllers
                                             FirstName = @firstName, 
                                             LastName = @lastName, 
                                             SlackHandle = @slackHandle, 
-                                            CohortId = @cohortId
+                                            CohortId = @cohortId,
+                                            Specialty = @specialty
                                             WHERE Id = @id";
 
                         cmd.Parameters.AddWithValue("@firstName", instructor.FirstName);
                         cmd.Parameters.AddWithValue("@lastName", instructor.LastName);
                         cmd.Parameters.AddWithValue("@slackHandle", instructor.SlackHandle);
                         cmd.Parameters.AddWithValue("@cohortId", instructor.CohortId);
+                        cmd.Parameters.AddWithValue("@specialty", instructor.Specialty);
                         cmd.Parameters.AddWithValue("@id", id);
 
                         cmd.ExecuteNonQuery();
@@ -249,7 +223,33 @@ namespace StudentExercisesMVC.Controllers
         // GET: Instructors/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            Instructor instructor = null;
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName, SlackHandle, CohortId
+                                        FROM Instructor
+                                        WHERE Id = @id";
+
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        instructor = new Instructor()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
+                            CohortId = reader.GetInt32(reader.GetOrdinal("CohortId"))
+                        };
+                    }
+                }
+                return View(instructor);
+            }
         }
 
         // POST: Instructors/Delete/5
@@ -259,9 +259,22 @@ namespace StudentExercisesMVC.Controllers
         {
             try
             {
-                // TODO: Add delete logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM StudentExercise
+                                            WHERE InstructorId = @id;
 
-                return RedirectToAction(nameof(Index));
+                                            DELETE FROM Instructor
+                                            WHERE Id = @id";
+
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                        return RedirectToAction(nameof(Index));
             }
             catch
             {
@@ -294,6 +307,25 @@ namespace StudentExercisesMVC.Controllers
                     return cohorts;
                 }
             }
+        }
+        
+        private List<SelectListItem> cohortList()
+        {
+            var cohorts = GetAllCohorts();
+            var selectItems = cohorts
+                .Select(cohort => new SelectListItem
+                {
+                    Text = cohort.Name,
+                    Value = cohort.Id.ToString()
+                })
+                .ToList();
+
+            selectItems.Insert(0, new SelectListItem
+            {
+                Text = "Choose cohort...",
+                Value = "0"
+            });
+            return selectItems;
         }
     }
 }
