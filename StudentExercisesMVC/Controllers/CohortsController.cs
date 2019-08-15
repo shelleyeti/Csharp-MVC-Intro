@@ -90,21 +90,6 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Create()
         {
             var viewModel = new CohortCreateViewModel();
-            var cohorts = GetAllCohorts();
-            var selectItems = cohorts
-                .Select(cohort => new SelectListItem
-                {
-                    Text = cohort.Name,
-                    Value = cohort.Id.ToString()
-                })
-                .ToList();
-
-            selectItems.Insert(0, new SelectListItem
-            {
-                Text = "Choose cohort...",
-                Value = "0"
-            });
-            //viewModel.Cohorts = selectItems;
             return View(viewModel);
         }
 
@@ -143,8 +128,6 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Edit(int id)
         {
             var viewModel = new CohortEditViewModel();
-            var cohorts = GetAllCohorts();
-
             Cohort cohort = null;
             using (SqlConnection conn = Connection)
             {
@@ -204,54 +187,71 @@ namespace StudentExercisesMVC.Controllers
             }
         }
 
-        //// GET: Instructors/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Instructors/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        private List<Cohort> GetAllCohorts()
+        // GET: Cohorts/Delete/5
+        public ActionResult Delete(int id)
         {
+            Cohort cohort = null;
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, Name FROM Cohort";
+                    cmd.CommandText = @"SELECT Id, [Name]
+                                        FROM Cohort
+                                        WHERE Id = @id";
+
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    List<Cohort> cohorts = new List<Cohort>();
-                    while (reader.Read())
+                    if (reader.Read())
                     {
-                        cohorts.Add(new Cohort
+                        cohort = new Cohort()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
-                        });
+                        };
                     }
-
-                    reader.Close();
-
-                    return cohorts;
                 }
+                return View(cohort);
             }
         }
+
+        // POST: Cohorts/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Delete(int id, IFormCollection collection)
+        //{
+            
+        //    try
+        //    {
+        //        using (SqlConnection conn = Connection)
+        //        {
+        //            conn.Open();
+        //            using (SqlCommand cmd = conn.CreateCommand())
+        //            {
+        //                cmd.CommandText = @"UPDATE Student
+        //                                    SET 
+        //                                    CohortId = 0
+        //                                    WHERE Id = @id;
+
+        //                                    UPDATE Instructor
+        //                                    SET 
+        //                                    CohortId = 0
+        //                                    WHERE Id = @id;
+
+        //                                    DELETE FROM Cohort
+        //                                    WHERE Id = @id";
+
+        //                cmd.Parameters.AddWithValue("@id", id);
+        //                cmd.ExecuteNonQuery();
+        //            }
+        //        }
+        //                return RedirectToAction(nameof(Index));
+        //    }
+        //    catch(Exception err)
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }
